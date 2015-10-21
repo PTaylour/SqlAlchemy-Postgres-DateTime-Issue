@@ -7,9 +7,9 @@ from pytz import utc
 # setup typical flask-sqlalchemy enabled app
 app = Flask(__name__)
 app.config.update(
-  SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:@localhost:5432/test'
-  SQLALCHEMY_ECHO = False
-  SECRET_KEY = 'a-secret-key'
+  SQLALCHEMY_DATABASE_URI = 'postgresql://taylop53:@localhost:5432/test',
+  SQLALCHEMY_ECHO = False,
+  SECRET_KEY = 'a-secret-key',
   DEBUG = True
 )
 db = SQLAlchemy(app)
