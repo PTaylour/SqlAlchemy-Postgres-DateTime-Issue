@@ -3,6 +3,7 @@ from flask import Flask, request, flash, url_for, redirect, \
      render_template, abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import types
+from sqlalchemy_utils import ArrowType
 from pytz import utc
 
 
@@ -43,6 +44,15 @@ class EventUTC(db.Model):
             (EventUTC.timestamp <= self.timestamp)
         ).all()
 
+class EventArrow(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(ArrowType)
+
+    def events_before(self):
+        return EventArrow.query.filter(
+            (EventArrow.timestamp <= self.timestamp)
+        ).all()
+
 def setup():
     db.drop_all()
     db.create_all()
@@ -64,6 +74,15 @@ def setup():
     ]
     for ev in events: 
         db.session.add(ev)
+
+    # create some arrow events
+    now = datetime.utcnow().replace(tzinfo=utc)
+    events = [
+        EventArrow(timestamp=now + timedelta(minutes=t))
+        for t in range(-2, 1)
+    ]
+    for ev in events: db.session.add(ev)
+
 
     db.session.commit()
 
@@ -88,6 +107,7 @@ if __name__ == '__main__':
 
     all_naive = EventNaive.query.all()
     all_utc = EventUTC.query.all()
+    all_arrow = EventArrow.query.all()
 
     print 'fetch events before an event for all events'
     print 'Using Naive Datatimes and then tz aware datetimes'
@@ -95,5 +115,7 @@ if __name__ == '__main__':
     map(test_filter_query, all_naive)
     print '\n\ntesting with utc:\n'    
     map(test_filter_query, all_utc)
+    print '\n\ntesting with all_arrow:\n'    
+    map(test_filter_query, all_arrow)
 
 
