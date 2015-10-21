@@ -41,7 +41,7 @@ class EventUTC(db.Model):
     def events_before(self):
         return EventUTC.query.filter(
             (EventUTC.timestamp <= self.timestamp)
-        ).order_by(EventUTC.timestamp.desc()).all()
+        ).all()
 
 def setup():
     db.drop_all()
